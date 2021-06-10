@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:innout/resource/db_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'transaction_type.dart';
@@ -22,7 +23,8 @@ class Transaction extends Comparable<Transaction> {
   final String description;
   TransactionType transactionType;
 
-  DateTime get createdDate => DateTime.fromMillisecondsSinceEpoch(_createdDateTimestamp).toLocal();
+  DateTime get createdDate =>
+      DateTime.fromMillisecondsSinceEpoch(_createdDateTimestamp).toLocal();
 
   Transaction.create({this.amount, this.transactionType, this.description})
       : assert(amount != null && transactionType != null),
@@ -33,7 +35,8 @@ class Transaction extends Comparable<Transaction> {
       : assert(amount != null),
         _createdDateTimestamp = date.toUtc().millisecondsSinceEpoch,
         uuid = Uuid().v1() {
-    int index = Random(DateTime.now().millisecondsSinceEpoch).nextInt(TransactionType.values.length);
+    int index = Random(DateTime.now().millisecondsSinceEpoch)
+        .nextInt(TransactionType.values.length);
     transactionType = TransactionType.values.elementAt(index);
   }
 
@@ -45,6 +48,14 @@ class Transaction extends Comparable<Transaction> {
         this.uuid = map[uuidKey],
         this.id = map[idKey];
 
+  Transaction.fromPgMap(Map map)
+      : this._createdDateTimestamp = map[colTimestamp],
+        this.amount = map[colAmount],
+        this.transactionType = TransactionType.values.elementAt(map[colType]),
+        this.description = map[colDescription],
+        this.uuid = map[colUuid],
+        this.id = map[colId];
+
   Map<String, dynamic> toMap() => {
         idKey: id,
         timestampKey: _createdDateTimestamp,
@@ -55,7 +66,11 @@ class Transaction extends Comparable<Transaction> {
       };
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Transaction && runtimeType == other.runtimeType && uuid == other.uuid;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Transaction &&
+          runtimeType == other.runtimeType &&
+          uuid == other.uuid;
 
   @override
   int get hashCode => uuid.hashCode;
@@ -67,5 +82,6 @@ class Transaction extends Comparable<Transaction> {
   }
 
   @override
-  String toString() => "Instance of Transaction: amount: $amount, date: ${this.createdDate}";
+  String toString() =>
+      "Instance of Transaction: amount: $amount, date: ${this.createdDate}";
 }

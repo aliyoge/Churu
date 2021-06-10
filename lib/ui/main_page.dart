@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
-import 'package:intl/intl.dart';
+import 'package:innout/resource/keys.dart';
+import 'package:innout/ui/settings_page.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:app_review/app_review.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,9 +36,13 @@ class _MainPageState extends State<MainPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      goToWelcome();
       Timer(Duration(milliseconds: 600), () {
-        if (scrollController.hasClients && scrollController.position.maxScrollExtent >= 240) {
-          scrollController.animateTo(240, duration: Duration(milliseconds: 300), curve: SpringCurve.underDamped);
+        if (scrollController.hasClients &&
+            scrollController.position.maxScrollExtent >= 240) {
+          scrollController.animateTo(240,
+              duration: Duration(milliseconds: 300),
+              curve: SpringCurve.underDamped);
         }
       });
     });
@@ -46,12 +50,29 @@ class _MainPageState extends State<MainPage> {
     BillBloc.instance.init();
   }
 
+  void goToWelcome() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var dbAddr = prefs.getString(Keys.dbAddr);
+    if (dbAddr == null || dbAddr == '') {
+      goToSettings();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     localizations = AppLocalizations(Localizations.localeOf(context));
-    backgroundColor = MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.white : Colors.black;
-    foregroundColor = MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.black : Colors.white;
-    subForegroundColor = MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.black54 : Colors.grey;
+    backgroundColor =
+        MediaQuery.of(context).platformBrightness == Brightness.light
+            ? Colors.white
+            : Colors.black;
+    foregroundColor =
+        MediaQuery.of(context).platformBrightness == Brightness.light
+            ? Colors.black
+            : Colors.white;
+    subForegroundColor =
+        MediaQuery.of(context).platformBrightness == Brightness.light
+            ? Colors.black54
+            : Colors.grey;
 
     return Scaffold(
         backgroundColor: backgroundColor,
@@ -67,7 +88,8 @@ class _MainPageState extends State<MainPage> {
                     if (snapshot.data.isEmpty) {
                       return ListView(
                         controller: scrollController,
-                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         children: <Widget>[
                           Container(
                               height: 240,
@@ -79,7 +101,9 @@ class _MainPageState extends State<MainPage> {
                                     children: <Widget>[
                                       Text(
                                         '¥0.00',
-                                        style: TextStyle(fontSize: 64, color: foregroundColor),
+                                        style: TextStyle(
+                                            fontSize: 64,
+                                            color: foregroundColor),
                                       )
                                     ],
                                   ),
@@ -87,15 +111,20 @@ class _MainPageState extends State<MainPage> {
                                     height: 24,
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       Text(
                                         '总入¥0.00',
-                                        style: TextStyle(fontSize: 30, color: foregroundColor),
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            color: foregroundColor),
                                       ),
                                       Text(
                                         '总出¥0.00',
-                                        style: TextStyle(fontSize: 30, color: foregroundColor),
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            color: foregroundColor),
                                       ),
                                     ],
                                   ),
@@ -106,7 +135,8 @@ class _MainPageState extends State<MainPage> {
                               child: Center(
                                 child: Text(
                                   '空',
-                                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
                                 ),
                               )),
                         ],
@@ -121,7 +151,10 @@ class _MainPageState extends State<MainPage> {
                     else
                       totalIn += transactions.first.amount;
 
-                    double total = transactions.map((e) => e.amount).toList().reduce((value, element) {
+                    double total = transactions
+                        .map((e) => e.amount)
+                        .toList()
+                        .reduce((value, element) {
                       print(element);
                       if (element < 0)
                         totalOut += element;
@@ -136,7 +169,8 @@ class _MainPageState extends State<MainPage> {
                         totalInStr = totalIn.toCurrencyString();
 
                     double mainSizeFactor = 1 + ((10 - totalStr.length) / 10);
-                    double subSizeFactor = 1 + ((20 - (totalInStr.length + totalOutStr.length)) / 20);
+                    double subSizeFactor = 1 +
+                        ((20 - (totalInStr.length + totalOutStr.length)) / 20);
 
                     print('the size is ' + subSizeFactor.toString());
 
@@ -145,7 +179,8 @@ class _MainPageState extends State<MainPage> {
 
                     return ListView(
                       controller: scrollController,
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       children: <Widget>[
                         Container(
                             height: 240,
@@ -156,13 +191,17 @@ class _MainPageState extends State<MainPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     Container(
-                                        width: MediaQuery.of(context).size.width,
+                                        width:
+                                            MediaQuery.of(context).size.width,
                                         child: Center(
                                             child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 12),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12),
                                           child: AutoSizeText(
                                             '${total < 0 ? '-' : ''}¥$totalStr',
-                                            style: TextStyle(fontSize: 58, color: foregroundColor),
+                                            style: TextStyle(
+                                                fontSize: 58,
+                                                color: foregroundColor),
                                             maxFontSize: 58,
                                             maxLines: 1,
                                           ),
@@ -173,12 +212,14 @@ class _MainPageState extends State<MainPage> {
                                   height: 24,
                                 ),
                                 Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Container(
                                       width: MediaQuery.of(context).size.width,
                                       child: Flex(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         direction: Axis.horizontal,
                                         children: [
                                           Expanded(
@@ -186,7 +227,9 @@ class _MainPageState extends State<MainPage> {
                                               child: Center(
                                                 child: Text(
                                                   '总入',
-                                                  style: TextStyle(fontSize: 24, color: foregroundColor),
+                                                  style: TextStyle(
+                                                      fontSize: 24,
+                                                      color: foregroundColor),
                                                 ),
                                               )),
                                           Expanded(
@@ -194,7 +237,9 @@ class _MainPageState extends State<MainPage> {
                                               child: Center(
                                                 child: Text(
                                                   '总出',
-                                                  style: TextStyle(fontSize: 24, color: foregroundColor),
+                                                  style: TextStyle(
+                                                      fontSize: 24,
+                                                      color: foregroundColor),
                                                 ),
                                               )),
                                         ],
@@ -203,19 +248,26 @@ class _MainPageState extends State<MainPage> {
                                     Container(
                                       width: MediaQuery.of(context).size.width,
                                       child: Flex(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         direction: Axis.horizontal,
                                         children: [
                                           Expanded(
                                             flex: 1,
                                             child: Container(
-                                              width: MediaQuery.of(context).size.width / 2,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
                                               child: Center(
                                                   child: Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12),
                                                 child: AutoSizeText(
                                                   '¥$totalInStr',
-                                                  style: TextStyle(fontSize: 30, color: foregroundColor),
+                                                  style: TextStyle(
+                                                      fontSize: 30,
+                                                      color: foregroundColor),
                                                   maxLines: 1,
                                                 ),
                                               )),
@@ -224,13 +276,19 @@ class _MainPageState extends State<MainPage> {
                                           Expanded(
                                             flex: 1,
                                             child: Container(
-                                              width: MediaQuery.of(context).size.width / 2,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
                                               child: Center(
                                                   child: Padding(
-                                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12),
                                                 child: AutoSizeText(
                                                   '¥$totalOutStr',
-                                                  style: TextStyle(fontSize: 30, color: foregroundColor),
+                                                  style: TextStyle(
+                                                      fontSize: 30,
+                                                      color: foregroundColor),
                                                   maxLines: 1,
                                                 ),
                                               )),
@@ -267,19 +325,43 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ElevatedButton(
+                      onLongPress: goToSettings,
                       onPressed: outgoingPressed,
-                      style: OutlinedButton.styleFrom(backgroundColor: Colors.white, shape: CircleBorder()),
+                      style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white, shape: CircleBorder()),
                       child: Padding(
                         padding: EdgeInsets.all(12),
-                        child: Text('出', style: TextStyle(fontFamily: 'noto', fontSize: 24, fontWeight: FontWeight.bold)),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          child: Center(
+                            child: Text('出',
+                                style: TextStyle(
+                                    fontFamily: 'noto',
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
                       ),
                     ),
                     ElevatedButton(
+                      onLongPress: goToSettings,
                       onPressed: incomePressed,
-                      style: OutlinedButton.styleFrom(backgroundColor: Colors.white, shape: CircleBorder()),
+                      style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white, shape: CircleBorder()),
                       child: Padding(
                         padding: EdgeInsets.all(12),
-                        child: Text('入', style: TextStyle(fontFamily: 'noto', fontSize: 24, fontWeight: FontWeight.bold)),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          child: Center(
+                            child: Text('入',
+                                style: TextStyle(
+                                    fontFamily: 'noto',
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
                       ),
                     ),
                     FutureBuilder(
@@ -295,12 +377,18 @@ class _MainPageState extends State<MainPage> {
                                   this.displayType = type;
                                 });
                               },
+                              onLongPress: goToSettings,
                             );
                           }
 
                           return ElevatedButton(
-                              child: Padding(padding: EdgeInsets.all(12), child: Container(height: 36, width: 36)),
-                              style: OutlinedButton.styleFrom(backgroundColor: Colors.white, shape: CircleBorder()),
+                              child: Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Container(height: 36, width: 36)),
+                              style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: CircleBorder()),
+                              onLongPress: goToSettings,
                               onPressed: null);
                         })
                   ],
@@ -350,13 +438,15 @@ class _MainPageState extends State<MainPage> {
                   padding: EdgeInsets.only(left: 16),
                   child: Text(
                     '删',
-                    style: TextStyle(fontFamily: noto, fontSize: 18, color: Colors.white),
+                    style: TextStyle(
+                        fontFamily: noto, fontSize: 18, color: Colors.white),
                   ),
                 )),
             color: Colors.redAccent,
           ),
           child: ListTile(
-            title: Text('${e.amount < 0 ? '出' : '入'}¥${e.amount.abs().toCurrencyString()}',
+            title: Text(
+                '${e.amount < 0 ? '出' : '入'}¥${e.amount.abs().toCurrencyString()}',
                 style: TextStyle(fontSize: 20, color: foregroundColor)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,7 +470,8 @@ class _MainPageState extends State<MainPage> {
     if (displayType == DisplayType.day) {
       Map<DateTime, List<Transaction>> dateToTransactionMap = {};
       for (var t in transactions) {
-        var date = DateTime(t.createdDate.year, t.createdDate.month, t.createdDate.day);
+        var date = DateTime(
+            t.createdDate.year, t.createdDate.month, t.createdDate.day);
 
         if (dateToTransactionMap.containsKey(date))
           dateToTransactionMap[date].add(t);
@@ -388,7 +479,8 @@ class _MainPageState extends State<MainPage> {
           dateToTransactionMap[date] = [t];
         }
       }
-      var dates = dateToTransactionMap.keys.toList()..sort((a, b) => b.compareTo(a));
+      var dates = dateToTransactionMap.keys.toList()
+        ..sort((a, b) => b.compareTo(a));
 
       return dates.map((d) {
         var trans = dateToTransactionMap[d];
@@ -399,7 +491,8 @@ class _MainPageState extends State<MainPage> {
         else
           totalIn += trans.first.amount;
 
-        double total = trans.map((e) => e.amount).toList().reduce((value, element) {
+        double total =
+            trans.map((e) => e.amount).toList().reduce((value, element) {
           if (element < 0)
             totalOut += element;
           else
@@ -454,7 +547,8 @@ class _MainPageState extends State<MainPage> {
           dateToTransactionMap[date] = [t];
         }
       }
-      var months = dateToTransactionMap.keys.toList()..sort((a, b) => b.compareTo(a));
+      var months = dateToTransactionMap.keys.toList()
+        ..sort((a, b) => b.compareTo(a));
 
       return months.map((d) {
         var trans = dateToTransactionMap[d];
@@ -465,7 +559,8 @@ class _MainPageState extends State<MainPage> {
         else
           totalIn += trans.first.amount;
 
-        double total = trans.map((e) => e.amount).toList().reduce((value, element) {
+        double total =
+            trans.map((e) => e.amount).toList().reduce((value, element) {
           if (element < 0)
             totalOut += element;
           else
@@ -491,8 +586,10 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                AutoSizeText('月出¥${totalOut.abs().toCurrencyString()}', style: TextStyle(color: subForegroundColor), maxLines: 1),
-                AutoSizeText('月入¥${totalIn.abs().toCurrencyString()}', style: TextStyle(color: subForegroundColor), maxLines: 1),
+                AutoSizeText('月出¥${totalOut.abs().toCurrencyString()}',
+                    style: TextStyle(color: subForegroundColor), maxLines: 1),
+                AutoSizeText('月入¥${totalIn.abs().toCurrencyString()}',
+                    style: TextStyle(color: subForegroundColor), maxLines: 1),
               ],
             ),
           ),
@@ -512,7 +609,8 @@ class _MainPageState extends State<MainPage> {
           dateToTransactionMap[date] = [t];
         }
       }
-      var months = dateToTransactionMap.keys.toList()..sort((a, b) => b.compareTo(a));
+      var months = dateToTransactionMap.keys.toList()
+        ..sort((a, b) => b.compareTo(a));
 
       return months.map((d) {
         var trans = dateToTransactionMap[d];
@@ -523,7 +621,8 @@ class _MainPageState extends State<MainPage> {
         else
           totalIn += trans.first.amount;
 
-        double total = trans.map((e) => e.amount).toList().reduce((value, element) {
+        double total =
+            trans.map((e) => e.amount).toList().reduce((value, element) {
           if (element < 0)
             totalOut += element;
           else
@@ -549,8 +648,10 @@ class _MainPageState extends State<MainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                AutoSizeText('年出¥${totalOut.abs().toCurrencyString()}', style: TextStyle(color: subForegroundColor), maxLines: 1),
-                AutoSizeText('年入¥${totalIn.abs().toCurrencyString()}', style: TextStyle(color: subForegroundColor), maxLines: 1),
+                AutoSizeText('年出¥${totalOut.abs().toCurrencyString()}',
+                    style: TextStyle(color: subForegroundColor), maxLines: 1),
+                AutoSizeText('年入¥${totalIn.abs().toCurrencyString()}',
+                    style: TextStyle(color: subForegroundColor), maxLines: 1),
               ],
             ),
           ),
@@ -586,7 +687,8 @@ class _MainPageState extends State<MainPage> {
         else
           totalIn += ts.first.amount;
 
-        double total = ts.map((e) => e.amount).toList().reduce((value, element) {
+        double total =
+            ts.map((e) => e.amount).toList().reduce((value, element) {
           if (element < 0)
             totalOut += element;
           else
@@ -665,8 +767,10 @@ class _MainPageState extends State<MainPage> {
                         )),
                     style: TextStyle(fontSize: 36, fontFamily: 'noto'),
                     decoration: BoxDecoration(color: Colors.transparent),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    keyboardAppearance: MediaQuery.of(context).platformBrightness,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    keyboardAppearance:
+                        MediaQuery.of(context).platformBrightness,
                     maxLength: 16,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     inputFormatters: [CurrencyTextInputFormatter(symbol: '')],
@@ -686,7 +790,8 @@ class _MainPageState extends State<MainPage> {
                             .map(
                               (e) => Text(
                                 localizations.transactionTypeToString(e),
-                                style: TextStyle(fontFamily: 'noto', fontSize: 14),
+                                style:
+                                    TextStyle(fontFamily: 'noto', fontSize: 14),
                               ),
                             )
                             .toList(),
@@ -699,8 +804,11 @@ class _MainPageState extends State<MainPage> {
                       color: Colors.transparent,
                       child: ElevatedButton(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 12, left: 24, right: 24, bottom: 12),
-                          child: Text('入账', style: TextStyle(fontSize: 24, fontFamily: 'noto')),
+                          padding: EdgeInsets.only(
+                              top: 12, left: 24, right: 24, bottom: 12),
+                          child: Text('入账',
+                              style:
+                                  TextStyle(fontSize: 24, fontFamily: 'noto')),
                         ),
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -709,13 +817,16 @@ class _MainPageState extends State<MainPage> {
                           ),
                         ),
                         onPressed: () {
-                          print("the text editing value is ${double.parse(textEditingController.text.replaceAll(',', ''))}");
+                          print(
+                              "the text editing value is ${double.parse(textEditingController.text.replaceAll(',', ''))}");
                           var t = Transaction.create(
-                              amount: double.parse(textEditingController.text.replaceAll(',', '')), transactionType: type);
+                              amount: double.parse(textEditingController.text
+                                  .replaceAll(',', '')),
+                              transactionType: type);
                           BillBloc.instance.addTransaction(t);
                           Navigator.pop(context);
                           textEditingController.clear();
-                          AppReview.requestReview;
+                          // AppReview.requestReview;
                         },
                       ),
                     ))
@@ -726,7 +837,8 @@ class _MainPageState extends State<MainPage> {
       },
       transitionBuilder: (_, anim, __, child) {
         return SlideTransition(
-          position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(CurvedAnimation(parent: anim, curve: SpringCurve.underDamped)),
+          position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(
+              CurvedAnimation(parent: anim, curve: SpringCurve.underDamped)),
           child: child,
         );
       },
@@ -768,8 +880,10 @@ class _MainPageState extends State<MainPage> {
                     style: TextStyle(fontSize: 36, fontFamily: 'noto'),
                     smartQuotesType: SmartQuotesType.enabled,
                     decoration: BoxDecoration(color: Colors.transparent),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    keyboardAppearance: MediaQuery.of(context).platformBrightness,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    keyboardAppearance:
+                        MediaQuery.of(context).platformBrightness,
                     maxLength: 16,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     inputFormatters: [CurrencyTextInputFormatter(symbol: '')],
@@ -789,7 +903,8 @@ class _MainPageState extends State<MainPage> {
                             .map(
                               (e) => Text(
                                 localizations.transactionTypeToString(e),
-                                style: TextStyle(fontFamily: 'noto', fontSize: 14),
+                                style:
+                                    TextStyle(fontFamily: 'noto', fontSize: 14),
                               ),
                             )
                             .toList(),
@@ -802,8 +917,11 @@ class _MainPageState extends State<MainPage> {
                       color: Colors.transparent,
                       child: ElevatedButton(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 12, left: 24, right: 24, bottom: 12),
-                          child: Text('出账', style: TextStyle(fontSize: 24, fontFamily: 'noto')),
+                          padding: EdgeInsets.only(
+                              top: 12, left: 24, right: 24, bottom: 12),
+                          child: Text('出账',
+                              style:
+                                  TextStyle(fontSize: 24, fontFamily: 'noto')),
                         ),
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -813,7 +931,9 @@ class _MainPageState extends State<MainPage> {
                         ),
                         onPressed: () {
                           var t = Transaction.create(
-                              amount: -double.parse(textEditingController.text.replaceAll(',', '')), transactionType: type);
+                              amount: -double.parse(textEditingController.text
+                                  .replaceAll(',', '')),
+                              transactionType: type);
                           BillBloc.instance.addTransaction(t);
                           Navigator.pop(context);
                           textEditingController.clear();
@@ -827,7 +947,8 @@ class _MainPageState extends State<MainPage> {
       },
       transitionBuilder: (_, anim, __, child) {
         return SlideTransition(
-          position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(CurvedAnimation(parent: anim, curve: SpringCurve.underDamped)),
+          position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(
+              CurvedAnimation(parent: anim, curve: SpringCurve.underDamped)),
           child: child,
         );
       },
@@ -835,6 +956,13 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<int> getCurrentPage() {
-    return SharedPreferences.getInstance().then((value) => value.getInt("lastVisitedPage") ?? 0);
+    return SharedPreferences.getInstance()
+        .then((value) => value.getInt("lastVisitedPage") ?? 0);
+  }
+
+  void goToSettings() async {
+    await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (ctx) => SettingsPage()));
+    BillBloc.instance.init();
   }
 }

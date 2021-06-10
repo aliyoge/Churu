@@ -6,9 +6,10 @@ import 'package:innout/model/display_type.dart';
 
 class TypePicker extends StatefulWidget {
   final ValueChanged<DisplayType> onTypeChanged;
+  final VoidCallback onLongPress;
   final int initialPage;
 
-  const TypePicker({Key key, this.initialPage, this.onTypeChanged}) : super(key: key);
+  const TypePicker({Key key, this.initialPage, this.onTypeChanged, this.onLongPress}) : super(key: key);
 
   @override
   _TypePickerState createState() => _TypePickerState();
@@ -33,6 +34,7 @@ class _TypePickerState extends State<TypePicker> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+        onLongPress: widget.onLongPress,
         onPressed: () {
           if (_pageController.page == 4) {
             _pageController.jumpToPage(0);
